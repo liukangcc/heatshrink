@@ -8,8 +8,14 @@
 #include "heatshrink_decoder.h"
 
 #include <rtthread.h>
+
 #define DBG_TAG    "HEATSHRINK.demo"
+#if HEATSHRINK_DEBUGGING_LOGS
+#define DBG_LVL    DBG_LOG
+#else
 #define DBG_LVL    DBG_INFO
+#endif
+
 #include <rtdbg.h>
 
 #define DEF_WINDOW_SZ2                  11
@@ -577,11 +583,15 @@ int heatshrink_example(int argc, char **argv)
 
     if (cfg.cmd == OP_ENC)
     {
-        return encode(&cfg);
+        result = encode(&cfg);
+        rt_kprintf("encode speed tick: %d\n", rt_tick_get() - start_tick);
+        return result;
     }
     else if (cfg.cmd == OP_DEC)
     {
-        return decode(&cfg);
+        result = decode(&cfg);
+        rt_kprintf("decode speed tick: %d\n", rt_tick_get() - start_tick);
+        return result;
     }
     else
     {
@@ -600,7 +610,7 @@ __exit:
         rt_free(cfg.out);
     }
 
-    rt_kprintf("speed time: %d\n", rt_tick_get() - start_tick);
+    rt_kprintf("failed\n");
 
     return result;
 }
