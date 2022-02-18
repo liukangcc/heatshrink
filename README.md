@@ -1,21 +1,44 @@
 # heatshrink
 
-A data compression/decompression library for embedded/real-time systems.
-
+用于嵌入式实时系统的数据压缩/解压缩库.
 
 ## Key Features:
 
-- **Low memory usage (as low as 50 bytes)**
-    It is useful for some cases with less than 50 bytes, and useful
-    for many general cases with < 300 bytes.
-- **Incremental, bounded CPU use**
-    You can chew on input data in arbitrarily tiny bites.
-    This is a useful property in hard real-time environments.
-- **Can use either static or dynamic memory allocation**
-    The library doesn't impose any constraints on memory management.
-- **ISC license**
-    You can use it freely, even for commercial purposes.
+- **Low memory usage (as low as 50 bytes)** It is useful for some cases with less than 50 bytes, and useful
+   for many general cases with < 300 bytes.
+- **Incremental, bounded CPU use** You can chew on input data in arbitrarily tiny bites.
+   This is a useful property in hard real-time environments.
+- **Can use either static or dynamic memory allocation** The library doesn't impose any constraints on memory management.
+- **ISC license** You can use it freely, even for commercial purposes.
 
+# Example
+
+- 使用 menuconfig 工具使能软件包
+
+- 编译并下载
+
+- 在命令行输入 `heatshrink_example -h` 获取使用帮助
+  
+  ```shell
+  msh /sdcard>heatshrink_example -h
+  heatshrink version 0.4.1 by Scott Vokes <vokes.s@gmail.com>
+  Home page: https://github.com/atomicobject/heatshrink
+  
+  Usage:
+    heatshrink [-h] [-e|-d] [IN_FILE] [OUT_FILE]
+  
+  heatshrink compresses or decompresses byte streams using LZSS, and is
+  designed especially for embedded, low-memory, and/or hard real-time
+  systems.
+  
+   -h        print help
+   -e        encode (compress, default)
+   -d        decode (decompress)
+  ```
+
+- 压缩文件：`heatshrink_example -e .cproject cpro.zip`
+
+- 解压文件：`heatshrink_example -d cpro.zip cpro.log`
 
 ## Getting Started:
 
@@ -30,24 +53,23 @@ Dynamic allocation is used by default, but in an embedded context, you
 probably want to statically allocate the encoder/decoder. Set
 `HEATSHRINK_DYNAMIC_ALLOC` to 0 in `heatshrink_config.h`.
 
-
 ### Basic Usage
 
 1. Allocate a `heatshrink_encoder` or `heatshrink_decoder` state machine
-using their `alloc` function, or statically allocate one and call their
-`reset` function to initialize them. (See below for configuration
-options.)
+   using their `alloc` function, or statically allocate one and call their
+   `reset` function to initialize them. (See below for configuration
+   options.)
 
 2. Use `sink` to sink an input buffer into the state machine. The
-`input_size` pointer argument will be set to indicate how many bytes of
-the input buffer were actually consumed. (If 0 bytes were conusmed, the
-buffer is full.)
+   `input_size` pointer argument will be set to indicate how many bytes of
+   the input buffer were actually consumed. (If 0 bytes were conusmed, the
+   buffer is full.)
 
 3. Use `poll` to move output from the state machine into an output
-buffer. The `output_size` pointer argument will be set to indicate how
-many bytes were output, and the function return value will indicate
-whether further output is available. (The state machine may not output
-any data until it has received enough input.)
+   buffer. The `output_size` pointer argument will be set to indicate how
+   many bytes were output, and the function return value will indicate
+   whether further output is available. (The state machine may not output
+   any data until it has received enough input.)
 
 Repeat steps 2 and 3 to stream data through the state machine. Since
 it's doing data compression, the input and output sizes can vary
@@ -55,16 +77,15 @@ significantly. Looping will be necessary to buffer the input and output
 as the data is processed.
 
 4. When the end of the input stream is reached, call `finish` to notify
-the state machine that no more input is available. The return value from
-`finish` will indicate whether any output remains. if so, call `poll` to
-get more.
+   the state machine that no more input is available. The return value from
+   `finish` will indicate whether any output remains. if so, call `poll` to
+   get more.
 
 Continue calling `finish` and `poll`ing to flush remaining output until
 `finish` indicates that the output has been exhausted.
 
 Sinking more data after `finish` has been called will not work without
 calling `reset` on the state machine.
-
 
 ## Configuration
 
@@ -97,11 +118,10 @@ The `lookahead_sz2` setting currently must be between 3 and the
 `window_sz2` - 1.
 
 - `input_buffer_size` - How large an input buffer to use for the
-decoder. This impacts how much work the decoder can do in a single
-step, and a larger buffer will use more memory. An extremely small
-buffer (say, 1 byte) will add overhead due to lots of suspend/resume
-function calls, but should not change how well data compresses.
-
+  decoder. This impacts how much work the decoder can do in a single
+  step, and a larger buffer will use more memory. An extremely small
+  buffer (say, 1 byte) will add overhead due to lots of suspend/resume
+  function calls, but should not change how well data compresses.
 
 ### Recommended Defaults
 
@@ -113,7 +133,6 @@ circumstances, but should be checked with representative data.
 The `lookahead_sz2` should probably start near the `window_sz2`/2, e.g.
 -w 8 -l 4 or -w 10 -l 5. The command-line program can be used to measure
 how well test data works with different settings.
-
 
 ## More Information and Benchmarks:
 
@@ -131,7 +150,6 @@ documentation.
 [blog post]: http://spin.atomicobject.com/2013/03/14/heatshrink-embedded-data-compression/
 [index]: http://spin.atomicobject.com/2014/01/13/lightweight-indexing-for-embedded-systems/
 [LZSS]: http://en.wikipedia.org/wiki/Lempel-Ziv-Storer-Szymanski
-
 
 ## Build Status
 

@@ -35,7 +35,7 @@ static const char *state_names[] = {
     "done",
 };
 #else
-#define LOG(...) /* no-op */
+#define LOG(...)   /* no-op */
 #define ASSERT(X) /* no-op */
 #endif
 
@@ -103,7 +103,8 @@ heatshrink_encoder *heatshrink_encoder_alloc(uint8_t window_sz2,
     return hse;
 }
 
-void heatshrink_encoder_free(heatshrink_encoder *hse) {
+void heatshrink_encoder_free(heatshrink_encoder *hse)
+{
     size_t buf_sz = (2 << HEATSHRINK_ENCODER_WINDOW_BITS(hse));
 #if HEATSHRINK_USE_INDEX
     size_t index_sz = sizeof(struct hs_index) + hse->search_index->size;
